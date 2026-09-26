@@ -1,0 +1,25 @@
+# Data & models: tracked by DVC, never by Git
+/data/**
+!/data/**/
+!/data/**/*.dvc
+!/data/**/.gitignore
+!/data/**/.gitkeep
+/models/**
+!/models/.gitkeep
+
+# Secrets
+.env
+.env.*
+*.pem
+.dvc/config.local
+
+# Python / tooling
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+mlruns/
+*.joblib
+*.pkl
