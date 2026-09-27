@@ -1,0 +1,97 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.prepare
+    deps:
+    - path: data/raw/telco_churn.csv
+      hash: md5
+      md5: 0f9de68e012bd3aed5fa7cdc9fc421af
+      size: 977501
+    - path: src/features.py
+      hash: md5
+      md5: 9e6e4afabee5d29655f7e99719992b80
+      size: 810
+    - path: src/prepare.py
+      hash: md5
+      md5: ea548298bc5dce7473713ee6b0e09db7
+      size: 1063
+    - path: src/utils.py
+      hash: md5
+      md5: 29b979178d530ff2dc6f2f312352a80e
+      size: 1042
+    params:
+      params.yaml:
+        data.raw: data/raw/telco_churn.csv
+        seed: 42
+        split:
+          test_size: 0.2
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: ac020a37d10b95fa0d00b6d748866378
+      size: 178930
+    - path: data/processed/train.csv
+      hash: md5
+      md5: fe26dee9f314acb62fa4c23bbf38009a
+      size: 713846
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: fe26dee9f314acb62fa4c23bbf38009a
+      size: 713846
+    - path: src/features.py
+      hash: md5
+      md5: 9e6e4afabee5d29655f7e99719992b80
+      size: 810
+    - path: src/train.py
+      hash: md5
+      md5: 0739f5b4e392419a6767c204d670db55
+      size: 2656
+    - path: src/utils.py
+      hash: md5
+      md5: 29b979178d530ff2dc6f2f312352a80e
+      size: 1042
+    params:
+      params.yaml:
+        seed: 42
+        train:
+          model: random_forest
+          n_estimators: 100
+          max_depth: 6
+          min_samples_leaf: 1
+          C: 1.0
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 3e2b753aebe2db19b3752e495268be12
+      size: 975899
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: ac020a37d10b95fa0d00b6d748866378
+      size: 178930
+    - path: models/model.joblib
+      hash: md5
+      md5: 3e2b753aebe2db19b3752e495268be12
+      size: 975899
+    - path: src/evaluate.py
+      hash: md5
+      md5: 3840ec3fbf76e06e8eb5dffcf59616f2
+      size: 1260
+    - path: src/features.py
+      hash: md5
+      md5: 9e6e4afabee5d29655f7e99719992b80
+      size: 810
+    - path: src/utils.py
+      hash: md5
+      md5: 29b979178d530ff2dc6f2f312352a80e
+      size: 1042
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 7404b2875f4b6407c3fbf10e974f3ad3
+      size: 193
