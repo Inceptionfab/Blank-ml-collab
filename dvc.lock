@@ -5,8 +5,8 @@ stages:
     deps:
     - path: data/raw/telco_churn.csv
       hash: md5
-      md5: 0f9de68e012bd3aed5fa7cdc9fc421af
-      size: 977501
+      md5: 26b9f047a955a4b9660c9673ff385145
+      size: 968734
     - path: src/features.py
       hash: md5
       md5: 9e6e4afabee5d29655f7e99719992b80
@@ -28,19 +28,19 @@ stages:
     outs:
     - path: data/processed/test.csv
       hash: md5
-      md5: ac020a37d10b95fa0d00b6d748866378
-      size: 178930
+      md5: e8036caed49d43e358e76ad2c30defdd
+      size: 178971
     - path: data/processed/train.csv
       hash: md5
-      md5: fe26dee9f314acb62fa4c23bbf38009a
-      size: 713846
+      md5: e2d2cec0a705d5a8267651476867a69d
+      size: 712212
   train:
     cmd: python -m src.train
     deps:
     - path: data/processed/train.csv
       hash: md5
-      md5: fe26dee9f314acb62fa4c23bbf38009a
-      size: 713846
+      md5: e2d2cec0a705d5a8267651476867a69d
+      size: 712212
     - path: src/features.py
       hash: md5
       md5: 9e6e4afabee5d29655f7e99719992b80
@@ -65,19 +65,19 @@ stages:
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 3e2b753aebe2db19b3752e495268be12
-      size: 975899
+      md5: c190747ffc05b6624584f4bb201966a5
+      size: 965659
   evaluate:
     cmd: python -m src.evaluate
     deps:
     - path: data/processed/test.csv
       hash: md5
-      md5: ac020a37d10b95fa0d00b6d748866378
-      size: 178930
+      md5: e8036caed49d43e358e76ad2c30defdd
+      size: 178971
     - path: models/model.joblib
       hash: md5
-      md5: 3e2b753aebe2db19b3752e495268be12
-      size: 975899
+      md5: c190747ffc05b6624584f4bb201966a5
+      size: 965659
     - path: src/evaluate.py
       hash: md5
       md5: 3840ec3fbf76e06e8eb5dffcf59616f2
@@ -93,5 +93,5 @@ stages:
     outs:
     - path: metrics.json
       hash: md5
-      md5: 7404b2875f4b6407c3fbf10e974f3ad3
-      size: 193
+      md5: a4f2deebfbd4aa1a803ef042d49d2a17
+      size: 194
