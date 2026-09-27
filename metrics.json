@@ -4,6 +4,6 @@
   "precision": 0.684,
   "recall": 0.4572,
   "accuracy": 0.7999,
-  "git_commit": "66cbe3656b3ff872160ddbd12d30e3ce4340c2a5",
-  "code_uncommitted": true
+  "git_commit": "6ef037f2618a1c9194c65dc0683cb008e577aa66",
+  "code_uncommitted": false
 }
