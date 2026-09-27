@@ -57,7 +57,7 @@ stages:
       params.yaml:
         seed: 42
         train:
-          model: random_forest
+          model: logistic_regression
           n_estimators: 100
           max_depth: 6
           min_samples_leaf: 1
@@ -65,8 +65,8 @@ stages:
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: c190747ffc05b6624584f4bb201966a5
-      size: 965659
+      md5: 97c45c8e32ed374c72b25cccd7bcaa95
+      size: 7978
   evaluate:
     cmd: python -m src.evaluate
     deps:
@@ -76,8 +76,8 @@ stages:
       size: 178971
     - path: models/model.joblib
       hash: md5
-      md5: c190747ffc05b6624584f4bb201966a5
-      size: 965659
+      md5: 97c45c8e32ed374c72b25cccd7bcaa95
+      size: 7978
     - path: src/evaluate.py
       hash: md5
       md5: 3840ec3fbf76e06e8eb5dffcf59616f2
@@ -93,5 +93,5 @@ stages:
     outs:
     - path: metrics.json
       hash: md5
-      md5: a4f2deebfbd4aa1a803ef042d49d2a17
+      md5: e31f096d450df95eb916582471769d04
       size: 194
