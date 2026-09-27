@@ -20,6 +20,7 @@ stages:
       - data/processed/train.csv
       - src/train.py
       - src/features.py
+      - src/utils.py
     params:
       - seed
       - train
@@ -32,6 +33,8 @@ stages:
       - data/processed/test.csv
       - models/model.joblib
       - src/evaluate.py
+      - src/features.py
+      - src/utils.py
     metrics:
       - metrics.json:
           cache: false

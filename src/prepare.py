@@ -12,6 +12,7 @@ OUT_DIR = Path("data/processed")
 
 
 def split_data(df: pd.DataFrame, test_size: float, seed: int):
+    """Stratified split on TARGET, fixed by seed, so the test set never changes across runs."""
     return train_test_split(
         df, test_size=test_size, random_state=seed, shuffle=True, stratify=df[TARGET]
     )

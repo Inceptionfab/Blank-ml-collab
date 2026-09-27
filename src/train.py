@@ -18,6 +18,7 @@ MODEL_PATH = Path("models/model.joblib")
 
 
 def build_model(cfg: dict, seed: int):
+    """Build the estimator named in params.yaml, seeded for reproducibility."""
     if cfg["model"] == "random_forest":
         return RandomForestClassifier(
             n_estimators=cfg["n_estimators"],
@@ -32,6 +33,8 @@ def build_model(cfg: dict, seed: int):
 
 
 def build_pipeline(X: pd.DataFrame, cfg: dict, seed: int) -> Pipeline:
+    """Wire imputer + scaler + one-hot encoder + model into a single Pipeline so every
+    preprocessing step is fit on the training split only, never on the full dataset."""
     numeric = [c for c in NUMERIC_COLS if c in X.columns]
     categorical = [c for c in X.columns if c not in numeric]
     numeric_steps = Pipeline(
@@ -47,6 +50,7 @@ def build_pipeline(X: pd.DataFrame, cfg: dict, seed: int) -> Pipeline:
 
 
 def fit(train_df: pd.DataFrame, cfg: dict, seed: int) -> Pipeline:
+    """Fit the full preprocessing + model pipeline on the training split."""
     X, y = train_df.drop(columns=[TARGET]), train_df[TARGET]
     pipe = build_pipeline(X, cfg, seed)
     pipe.fit(X, y)  # imputer, scaler and encoder learn from train rows only

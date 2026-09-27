@@ -12,6 +12,7 @@ from src.utils import git_info
 
 
 def compute_metrics(y_true, y_pred, y_proba) -> dict:
+    """Score predictions and round every metric to 4 decimals, as the team reports them."""
     scores = {
         "roc_auc": roc_auc_score(y_true, y_proba),
         "f1": f1_score(y_true, y_pred),
@@ -28,7 +29,9 @@ def main() -> None:
     X, y = test.drop(columns=[TARGET]), test[TARGET]
     metrics = compute_metrics(y, model.predict(X), model.predict_proba(X)[:, 1])
     metrics.update(git_info())
-    Path("metrics.json").write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
+    Path("metrics.json").write_text(
+        json.dumps(metrics, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
     print(f"evaluate: {metrics}")
 
 
