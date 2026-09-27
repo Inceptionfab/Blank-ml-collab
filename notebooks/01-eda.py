@@ -122,6 +122,12 @@ fig.suptitle("")
 plt.show()
 
 # %% [markdown]
+# Median of each numeric feature for non-churners (0) and churners (1):
+
+# %%
+df.groupby("Churn")[["tenure", "MonthlyCharges"]].median()
+
+# %% [markdown]
 # ## 6. Key findings
 #
 # - The target is imbalanced: about **26.5%** of customers churn, so accuracy alone is misleading
