@@ -1,46 +1,69 @@
-"""Starter code adapted from Kaggle notebook "CUSTOMER CHURN PREDICTION 📈" by Bharti Prasad: https://www.kaggle.com/code/bhartiprasad17/customer-churn-prediction"""
+"""Stage 2 - fit preprocessing + model on the TRAIN split only."""
 
 from pathlib import Path
 
+import joblib
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, VotingClassifier
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+from src.features import NUMERIC_COLS, TARGET
+from src.utils import load_params, set_seed
+
+MODEL_PATH = Path("models/model.joblib")
+
+
+def build_model(cfg: dict, seed: int):
+    """Build the estimator named in params.yaml, seeded for reproducibility."""
+    if cfg["model"] == "random_forest":
+        return RandomForestClassifier(
+            n_estimators=cfg["n_estimators"],
+            max_depth=cfg["max_depth"],
+            min_samples_leaf=cfg["min_samples_leaf"],
+            random_state=seed,
+            n_jobs=1,  # single-threaded: identical floating-point results on every machine
+        )
+    if cfg["model"] == "logistic_regression":
+        return LogisticRegression(C=cfg["C"], max_iter=2000, random_state=seed)
+    raise ValueError(f"Unknown model in params.yaml: {cfg['model']}")
+
+
+def build_pipeline(X: pd.DataFrame, cfg: dict, seed: int) -> Pipeline:
+    """Wire imputer + scaler + one-hot encoder + model into a single Pipeline so every
+    preprocessing step is fit on the training split only, never on the full dataset."""
+    numeric = [c for c in NUMERIC_COLS if c in X.columns]
+    categorical = [c for c in X.columns if c not in numeric]
+    numeric_steps = Pipeline(
+        [("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]
+    )
+    preprocess = ColumnTransformer(
+        [
+            ("num", numeric_steps, numeric),
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical),
+        ]
+    )
+    return Pipeline([("preprocess", preprocess), ("model", build_model(cfg, seed))])
+
+
+def fit(train_df: pd.DataFrame, cfg: dict, seed: int) -> Pipeline:
+    """Fit the full preprocessing + model pipeline on the training split."""
+    X, y = train_df.drop(columns=[TARGET]), train_df[TARGET]
+    pipe = build_pipeline(X, cfg, seed)
+    pipe.fit(X, y)  # imputer, scaler and encoder learn from train rows only
+    return pipe
 
 
 def main() -> None:
-    df = pd.read_csv(Path("data/raw/telco_churn.csv"))
-
-    df = df.drop(['customerID'], axis=1)
-    df['TotalCharges'] = pd.to_numeric(df.TotalCharges, errors='coerce')
-    df.drop(labels=df[df['tenure'] == 0].index, axis=0, inplace=True)
-    df['TotalCharges'] = df['TotalCharges'].fillna(df['TotalCharges'].mean())
-    df["SeniorCitizen"] = df["SeniorCitizen"].map({0: "No", 1: "Yes"})
-
-    for col in df.select_dtypes(include=['object', 'str']).columns:
-        df[col] = LabelEncoder().fit_transform(df[col])
-
-    X = df.drop(columns=['Churn'])
-    y = df['Churn'].values
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.30, random_state=42, stratify=y
-    )
-
-    num_cols = ['tenure', 'MonthlyCharges', 'TotalCharges']
-    scaler = StandardScaler()
-    X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
-    X_test[num_cols] = scaler.transform(X_test[num_cols])
-
-    clf1 = GradientBoostingClassifier(random_state=42)
-    clf2 = LogisticRegression(random_state=42)
-    clf3 = AdaBoostClassifier(random_state=42)
-    eclf1 = VotingClassifier(estimators=[('gbc', clf1), ('lr', clf2), ('abc', clf3)], voting='soft')
-    eclf1.fit(X_train, y_train)
-    predictions = eclf1.predict(X_test)
-    print("Final Accuracy Score:", accuracy_score(y_test, predictions))
+    params = load_params()
+    set_seed(params["seed"])
+    model = fit(pd.read_csv("data/processed/train.csv"), params["train"], params["seed"])
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    joblib.dump(model, MODEL_PATH)
+    print(f"train: saved {MODEL_PATH}")
 
 
 if __name__ == "__main__":

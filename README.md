@@ -28,3 +28,13 @@ Temporarily: download the CSV from Kaggle into `data/raw/telco_churn.csv`.
 ```bash
 uv run python src/train.py
 ```
+
+## Reproduce the released model (model-v1.0)
+```bash
+git clone --branch model-v1.0 https://github.com/Inceptionfab/Blank-ml-collab.git
+cd Blank-ml-collab
+uv sync --frozen
+uv run dvc pull
+uv run dvc repro --force
+cat metrics.json     # compare with REPORT.md section 2
+```

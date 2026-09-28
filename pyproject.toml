@@ -3,8 +3,35 @@ name = "blank-ml-collab"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "dvc>=3.67.1",
     "joblib>=1.6.0",
     "pandas>=3.0.6",
     "pyyaml>=6.0.3",
     "scikit-learn>=1.9.1",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+    "jupyterlab>=4.6.4",
+    "jupytext>=1.19.5",
+    "matplotlib>=3.11.2",
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+    "seaborn>=0.13.2",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"notebooks/*" = ["E402", "B018"]
