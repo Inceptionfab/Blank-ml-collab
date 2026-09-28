@@ -21,12 +21,13 @@ uv sync
 ```
 
 ## Get the data
-Temporarily: download the CSV from Kaggle into `data/raw/telco_churn.csv`.
-(After DVC is set up: `uv run dvc pull`.)
-
-## Run
 ```bash
-uv run python src/train.py
+uv run dvc pull
+```
+
+## Run the pipeline
+```bash
+uv run dvc repro       # prepare → train → evaluate; writes metrics.json
 ```
 
 ## Reproduce the released model (model-v1.0)
