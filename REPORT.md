@@ -129,8 +129,8 @@ mistake (#9), reverted it through a reviewed PR (#10) and re-merged it into `dev
 setup (#2), CI (#12) and the back-merge (#18), and on #5 I requested changes after a fresh-clone `dvc repro` exposed a CRLF hash
 mismatch in `metrics.json`, missing `dvc.yaml` dependencies and metrics logged with `code_uncommitted: true`. Finally, I was the
 release's independent reproducer: from a fresh clone of #15, and again on `staging` after the merge, `dvc repro --force` gave
-identical metrics and bit-for-bit identical model and split hashes. I also wrote up the retrospective and the CONTRIBUTING
-lessons (#19).
+identical metrics and bit-for-bit identical model and split hashes. I also ran the retrospective and wrote it up with the
+CONTRIBUTING lessons (#19).
 
 ### Fahad
 I picked up the Kaggle starter notebook and made it runnable from the command line (`src/train.py` on `main`), stripping the
