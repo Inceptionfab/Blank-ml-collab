@@ -55,3 +55,20 @@ F1 of the churn class (Churn = Yes). All metrics are rounded to 4 decimals by `s
 - Paired with jupytext (`.ipynb` + `.py` percent script); outputs stripped by nbstripout.
 - Restart and run all cells before opening a PR.
 - Reusable logic moves to `src/` with a unit test and is imported back into the notebook.
+
+## Lessons learned (v1.0 retrospective)
+1. **Check the PR base before you click "Create pull request".** Every PR targets `dev`, except release PRs,
+   `fix/` PRs and the `main` → `dev` back-merge, which name their own base. GitHub defaults to `main`: #6 and #9
+   targeted `main` by mistake, and #9 had to be reverted in #10.
+2. **Use the right merge button, and never rewrite a reviewed branch.** Squash for `feat/` and `data/` into `dev`;
+   "Create a merge commit" for everything into `staging` or `main` and for the back-merge (check the dropdown: #11
+   went in unsquashed). Once review is requested, add commits instead of amending and force-pushing (#5).
+3. **The winner rule is exact.** Highest ROC-AUC; runs within 0.001 ROC-AUC count as tied, and the higher F1 wins.
+   "Tie-break" alone was read two ways during the experiment decision (#7).
+4. **Runs must be reproducible from a fresh clone.** Commit before `dvc repro` or an experiment, and reviewers reject
+   `code_uncommitted: true`; write generated text files with `newline="\n"` so hashes match on every OS; list every
+   imported `src/` module as a dependency in `dvc.yaml`. All three were caught in the review of #5.
+5. **Set up DVC remote access in every clone.** DagsHub needs an account even for a public repo, so run the three
+   `uv run dvc remote modify storage --local ...` lines (see README) in each new clone, and `uv run dvc status -c`
+   before `git push` to confirm the remote has your data. On Windows `dvc exp push` can't authenticate; push the
+   experiment refs with `git push origin "refs/exps/*:refs/exps/*"` instead.
