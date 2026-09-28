@@ -29,10 +29,14 @@
 | Final metrics | roc_auc 0.8356 · f1 0.611 · precision 0.6486 · recall 0.5775 · accuracy 0.8045 |
 | Independent reproduction | Ahsan, fresh clone, PR #15: identical metrics ✅ (link: …) |
 
-How to reproduce:
+How to reproduce (DagsHub needs a free account even for a public repo; create a token under User Settings → Tokens):
 ```bash
 git clone --branch model-v1.0 https://github.com/Inceptionfab/Blank-ml-collab.git
-cd Blank-ml-collab && uv sync --frozen && uv run dvc pull && uv run dvc repro --force
+cd Blank-ml-collab && uv sync --frozen
+uv run dvc remote modify storage --local auth basic
+uv run dvc remote modify storage --local user <your-dagshub-username>
+uv run dvc remote modify storage --local password <your-dagshub-token>
+uv run dvc pull && uv run dvc repro --force
 ```
 
 ## 3. Experiments
@@ -91,9 +95,26 @@ the higher F1 wins. taha-d11-leaf10 had the top ROC-AUC (0.8363), but ahsan-lr-c
 ![Notebook diff without outputs](docs/screenshots/notebook-clean-diff.png)
 
 ## 6. Retrospective
-- **What broke:** …
-- **What we standardised:** …
-- **Added to CONTRIBUTING.md because of it:** …
+- **What broke:**
+  - Two PRs targeted `main` instead of `dev` (#6, #9). #9 was merged, which copied all of `dev` into production
+    without the staging release; we undid it with a reviewed revert (#10) instead of rewriting `main`, and re-merged
+    the change into `dev` (#11).
+  - On Windows, `metrics.json` was written with CRLF line endings, so its hash never matched `dvc.lock` on a fresh
+    clone and `dvc repro` was never "up to date"; `dvc.yaml` was also missing two `src/` dependencies, and the first
+    metrics were logged with `code_uncommitted: true`. All three were caught in the review of #5.
+  - A reviewed branch was force-pushed (#5), which broke the reviewer's `git pull`; #11 was merged with a merge
+    commit instead of a squash.
+  - "Tie-break F1" was read two ways during the experiment decision (#7). The conflict our plan expected on the
+    `C:` line could not happen, because the winning C equalled the baseline, so the real conflict came from #8.
+  - Tooling: `dvc exp push` can't authenticate on Windows; DagsHub requires an account for every `dvc pull`, even
+    from a public repo; and the README's run command broke after the pipeline refactor (fixed by hotfix #17).
+- **What we standardised:** the base branch and merge method for each kind of PR, an exact winner rule, the checks a
+  reviewer runs on pipeline PRs (fresh clone, `dvc repro` up to date, `code_uncommitted: false`), and credential
+  setup for every clone.
+- **Added to CONTRIBUTING.md because of it:** a "Lessons learned (v1.0 retrospective)" section with five rules:
+  check the PR base; use the right merge button and never rewrite a reviewed branch; the exact winner rule (0.001
+  ROC-AUC tie window, then F1); reproducible runs (commit first, LF output, complete `dvc.yaml` deps); and DVC remote
+  access (credentials in every clone, `dvc status -c` before `git push`, the Windows `dvc exp push` workaround).
 
 ## 7. Individual contributions
 ### Ahsan
@@ -105,8 +126,11 @@ version to DagsHub before the Git push, and showed `git switch` + `dvc checkout`
 logistic-regression C sweep on `exp/ahsan-logreg` won the team comparison, and I promoted `ahsan-lr-c1` in #7. I added schema,
 range and null checks plus the seeded, Churn-stratified 300-row sample that CI uses; I first opened that PR against `main` by
 mistake (#9), reverted it through a reviewed PR (#10) and re-merged it into `dev` (#11). As a reviewer I approved the pre-commit
-setup (#2) and CI (#12), and on #5 I requested changes after a fresh-clone `dvc repro` exposed a CRLF hash mismatch in
-`metrics.json`, missing `dvc.yaml` dependencies and metrics logged with `code_uncommitted: true`.
+setup (#2), CI (#12) and the back-merge (#18), and on #5 I requested changes after a fresh-clone `dvc repro` exposed a CRLF hash
+mismatch in `metrics.json`, missing `dvc.yaml` dependencies and metrics logged with `code_uncommitted: true`. Finally, I was the
+release's independent reproducer: from a fresh clone of #15, and again on `staging` after the merge, `dvc repro --force` gave
+identical metrics and bit-for-bit identical model and split hashes. I also wrote up the retrospective and the CONTRIBUTING
+lessons (#19).
 
 ### Fahad
 I picked up the Kaggle starter notebook and made it runnable from the command line (`src/train.py` on `main`), stripping the
@@ -138,3 +162,6 @@ I served as the platform owner for the team. I established the repository, confi
   block merging; it was closed unmerged.
 - The winner was selected on the held-out test split; a separate validation split or cross-validation
   would be stricter. Several runs were within 0.001 ROC-AUC of each other, so F1 decided the winner.
+- The DagsHub repo is public, but DagsHub requires a (free) account for every download: an anonymous `dvc pull`
+  returns 401, as it does for DagsHub's own public repos. Reproducing therefore needs a DagsHub token, set with the
+  three `dvc remote modify storage --local` lines shown in section 2 and the README.
