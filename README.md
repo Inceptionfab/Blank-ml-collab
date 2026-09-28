@@ -21,7 +21,12 @@ uv sync
 ```
 
 ## Get the data
+DagsHub requires a (free) account even to download from a public repo. Create one, make a token under
+**User Settings → Tokens**, and set it once per clone (stored in the git-ignored `.dvc/config.local`):
 ```bash
+uv run dvc remote modify storage --local auth basic
+uv run dvc remote modify storage --local user <your-dagshub-username>
+uv run dvc remote modify storage --local password <your-dagshub-token>
 uv run dvc pull
 ```
 
@@ -35,6 +40,10 @@ uv run dvc repro       # prepare → train → evaluate; writes metrics.json
 git clone --branch model-v1.0 https://github.com/Inceptionfab/Blank-ml-collab.git
 cd Blank-ml-collab
 uv sync --frozen
+# DagsHub credentials, see "Get the data" above:
+uv run dvc remote modify storage --local auth basic
+uv run dvc remote modify storage --local user <your-dagshub-username>
+uv run dvc remote modify storage --local password <your-dagshub-token>
 uv run dvc pull
 uv run dvc repro --force
 cat metrics.json     # compare with REPORT.md section 2
