@@ -1,9 +1,9 @@
 {
-  "roc_auc": 0.8359,
-  "f1": 0.6099,
-  "precision": 0.6495,
-  "recall": 0.5749,
+  "roc_auc": 0.8356,
+  "f1": 0.611,
+  "precision": 0.6486,
+  "recall": 0.5775,
   "accuracy": 0.8045,
-  "git_commit": "5b5dff5feea791f17c4379c3e2f387edc4d7e762",
+  "git_commit": "c9e69d2ca7061aa0e523fa1b536d89de8ad40243",
   "code_uncommitted": false
 }

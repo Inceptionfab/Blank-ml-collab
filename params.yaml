@@ -11,4 +11,4 @@ train:
   n_estimators: 100
   max_depth: 6
   min_samples_leaf: 1
-  C: 1.0                    # only used by logistic_regression
+  C: 3.0                    # only used by logistic_regression

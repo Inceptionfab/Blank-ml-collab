@@ -61,11 +61,11 @@ stages:
           n_estimators: 100
           max_depth: 6
           min_samples_leaf: 1
-          C: 1.0
+          C: 3.0
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 97c45c8e32ed374c72b25cccd7bcaa95
+      md5: bfb85f08053d1163d4b1bde6fd24e8f4
       size: 7978
   evaluate:
     cmd: python -m src.evaluate
@@ -76,7 +76,7 @@ stages:
       size: 178971
     - path: models/model.joblib
       hash: md5
-      md5: 97c45c8e32ed374c72b25cccd7bcaa95
+      md5: bfb85f08053d1163d4b1bde6fd24e8f4
       size: 7978
     - path: src/evaluate.py
       hash: md5
@@ -93,5 +93,5 @@ stages:
     outs:
     - path: metrics.json
       hash: md5
-      md5: e31f096d450df95eb916582471769d04
-      size: 194
+      md5: 85633daef3256dea69e8b53fa2cf062c
+      size: 193
