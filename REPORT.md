@@ -71,7 +71,12 @@ the higher F1 wins. taha-d11-leaf10 had the top ROC-AUC (0.8363), but ahsan-lr-c
 - Data-update PR: https://github.com/Inceptionfab/Blank-ml-collab/pull/6
 - Conflict-resolution PR: https://github.com/Inceptionfab/Blank-ml-collab/pull/8
 - Promotion of the winning experiment: https://github.com/Inceptionfab/Blank-ml-collab/pull/7
-- "Changes requested" reviews: <links to the reviews on #4, #5 and #6>
+- "Changes requested" reviews:
+  - Taha on #4 (EDA notebook: key findings cited medians the notebook didn't compute): https://github.com/Inceptionfab/Blank-ml-collab/pull/4#pullrequestreview-5331267006
+  - Ahsan on #5 (pipeline: CRLF `metrics.json` hash mismatch, missing `dvc.yaml` deps): https://github.com/Inceptionfab/Blank-ml-collab/pull/5#pullrequestreview-5331440967
+  - Fahad on #6 (data update: dropped rows' `Churn` values, docstring, derived counts): https://github.com/Inceptionfab/Blank-ml-collab/pull/6#pullrequestreview-5331597618
+- Wrong-base incident: #9 was merged into `main` by mistake (https://github.com/Inceptionfab/Blank-ml-collab/pull/9), reverted through
+  a reviewed PR (https://github.com/Inceptionfab/Blank-ml-collab/pull/10) and re-merged into `dev` (https://github.com/Inceptionfab/Blank-ml-collab/pull/11)
 - Release PRs: <link to #15 (dev → staging)>, <link to #16 (staging → main)>
 - Abandoned experiment branch: https://github.com/Inceptionfab/Blank-ml-collab/tree/exp/fahad-max-depth. Abandoned because the best
   max_depth run (fahad-depth8: roc_auc 0.8343, f1 0.5667) lost to logistic regression (ahsan-lr-c1: 0.8359, 0.6099); we kept one model
@@ -92,7 +97,16 @@ the higher F1 wins. taha-d11-leaf10 had the top ROC-AUC (0.8363), but ahsan-lr-c
 
 ## 7. Individual contributions
 ### Ahsan
-<written and committed by Ahsan>
+I was the data owner. I put the raw Telco CSV under DVC with a DagsHub remote (#3), so only its `.dvc` pointer is in Git
+history, and I built the EDA notebook around a reusable, unit-tested `clean_telco` function in `src/features.py`, paired with
+jupytext and stripped by nbstripout (#4); Taha's requested change there made me compute the medians quoted in the key findings.
+In #6 I removed the 11 zero-tenure customers whose `TotalCharges` was blank (all of them `Churn = No`), pushed the new data
+version to DagsHub before the Git push, and showed `git switch` + `dvc checkout` moving between 7,043 and 7,032 rows. My
+logistic-regression C sweep on `exp/ahsan-logreg` won the team comparison, and I promoted `ahsan-lr-c1` in #7. I added schema,
+range and null checks plus the seeded, Churn-stratified 300-row sample that CI uses; I first opened that PR against `main` by
+mistake (#9), reverted it through a reviewed PR (#10) and re-merged it into `dev` (#11). As a reviewer I approved the pre-commit
+setup (#2) and CI (#12), and on #5 I requested changes after a fresh-clone `dvc repro` exposed a CRLF hash mismatch in
+`metrics.json`, missing `dvc.yaml` dependencies and metrics logged with `code_uncommitted: true`.
 
 ### Fahad
 I picked up the Kaggle starter notebook and made it runnable from the command line (`src/train.py` on `main`), stripping the
