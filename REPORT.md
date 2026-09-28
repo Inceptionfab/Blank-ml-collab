@@ -19,7 +19,7 @@
 ## 2. Reproducibility of model-v1.0
 | Item | Value |
 |---|---|
-| Release tag | `model-v1.0` → commit `…` |
+| Release tag | `model-v1.0` → commit `cb4b9d8c30702bb602194bfab9da8d77d7aecf7f` |
 | Commit that trained the model (`git_commit` in metrics.json) | `c9e69d2ca7061aa0e523fa1b536d89de8ad40243` (PR #8) |
 | params.yaml | seed 42 · test_size 0.2 · model logistic_regression · C 3.0 (RF-only params unused) |
 | Data version | `data/raw/telco_churn.csv.dvc` md5 `26b9f047a955a4b9660c9673ff385145` · 7,032 rows × 21 columns |
@@ -27,7 +27,7 @@
 | Pipeline lock | `dvc.lock` at the tag |
 | Seed | 42: split, shuffling, model initialisation, CI sample |
 | Final metrics | roc_auc 0.8356 · f1 0.611 · precision 0.6486 · recall 0.5775 · accuracy 0.8045 |
-| Independent reproduction | Ahsan, fresh clone, PR #15: identical metrics ✅ (link: …) |
+| Independent reproduction | Ahsan, fresh clone, PR #15: identical metrics ✅ (link: https://github.com/Inceptionfab/Blank-ml-collab/pull/15) |
 
 How to reproduce (DagsHub needs a free account even for a public repo; create a token under User Settings → Tokens):
 ```bash
@@ -81,11 +81,11 @@ the higher F1 wins. taha-d11-leaf10 had the top ROC-AUC (0.8363), but ahsan-lr-c
   - Fahad on #6 (data update: dropped rows' `Churn` values, docstring, derived counts): https://github.com/Inceptionfab/Blank-ml-collab/pull/6#pullrequestreview-5331597618
 - Wrong-base incident: #9 was merged into `main` by mistake (https://github.com/Inceptionfab/Blank-ml-collab/pull/9), reverted through
   a reviewed PR (https://github.com/Inceptionfab/Blank-ml-collab/pull/10) and re-merged into `dev` (https://github.com/Inceptionfab/Blank-ml-collab/pull/11)
-- Release PRs: <link to #15 (dev → staging)>, <link to #16 (staging → main)>
+- Release PRs: https://github.com/Inceptionfab/Blank-ml-collab/pull/15 (dev → staging), https://github.com/Inceptionfab/Blank-ml-collab/pull/16 (staging → main)
 - Abandoned experiment branch: https://github.com/Inceptionfab/Blank-ml-collab/tree/exp/fahad-max-depth. Abandoned because the best
   max_depth run (fahad-depth8: roc_auc 0.8343, f1 0.5667) lost to logistic regression (ahsan-lr-c1: 0.8359, 0.6099); we kept one model
   family. exp/ahsan-logreg and exp/taha-regularisation also stay unmerged, as our exp/ rule requires.
-- Bonus: hotfix PR <#17>, tag `model-v1.0.1`, back-merge <#18>; CML metrics comments on every PR
+- Bonus: hotfix PR https://github.com/Inceptionfab/Blank-ml-collab/pull/17, tag `model-v1.0.1` (commit `7f6a528fe17765fb71b9decc882d51c4aa458db6`), back-merge https://github.com/Inceptionfab/Blank-ml-collab/pull/18; CML metrics comments on every PR (e.g. https://github.com/Inceptionfab/Blank-ml-collab/pull/12, https://github.com/Inceptionfab/Blank-ml-collab/pull/15)
 
 ## 5. Screenshots
 ![Large file blocked by pre-commit](docs/screenshots/precommit-large-file.PNG)
