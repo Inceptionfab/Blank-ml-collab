@@ -21,12 +21,18 @@ uv sync
 ```
 
 ## Get the data
-Temporarily: download the CSV from Kaggle into `data/raw/telco_churn.csv`.
-(After DVC is set up: `uv run dvc pull`.)
-
-## Run
+DagsHub requires a (free) account even to download from a public repo. Create one, make a token under
+**User Settings → Tokens**, and set it once per clone (stored in the git-ignored `.dvc/config.local`):
 ```bash
-uv run python src/train.py
+uv run dvc remote modify storage --local auth basic
+uv run dvc remote modify storage --local user <your-dagshub-username>
+uv run dvc remote modify storage --local password <your-dagshub-token>
+uv run dvc pull
+```
+
+## Run the pipeline
+```bash
+uv run dvc repro       # prepare → train → evaluate; writes metrics.json
 ```
 
 ## Reproduce the released model (model-v1.0)
@@ -34,6 +40,10 @@ uv run python src/train.py
 git clone --branch model-v1.0 https://github.com/Inceptionfab/Blank-ml-collab.git
 cd Blank-ml-collab
 uv sync --frozen
+# DagsHub credentials, see "Get the data" above:
+uv run dvc remote modify storage --local auth basic
+uv run dvc remote modify storage --local user <your-dagshub-username>
+uv run dvc remote modify storage --local password <your-dagshub-token>
 uv run dvc pull
 uv run dvc repro --force
 cat metrics.json     # compare with REPORT.md section 2
