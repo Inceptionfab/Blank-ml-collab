@@ -126,7 +126,7 @@ with the bonus hotfix #17 and its back-merge #18. On the review side I reviewed 
 missing dropped-row `Churn` breakdown and a docstring), and reviewed #8, the revert/re-merge sequence #9/#10/#11, #15, #19 and #20.
 
 ### Taha
-<written and committed by Taha>
+I served as the platform owner for the team. I established the repository, configured the uv virtual environment, set up `.gitignore`, `.gitattributes`, and enforced GitHub branch rulesets for `main`, `staging`, and `dev`. In #2, I introduced the pre-commit configuration with linters, formatters, and security checks, capturing verification screenshots for large file and secret leakage blocks. On `exp/taha-regularisation`, I executed four hyperparameter experiments tuning depth, leaf size, and trees; when my branch collided with Ahsan's promoted logistic regression in #8, I resolved the merge conflict using data-driven evaluations across four candidates, proving that logistic regression with C=3.0 was superior and pushing the winning model. I authored the comprehensive GitHub Actions CI pipeline in #12 with lint, tests, data validation, and an automated CML metrics comment, followed by enforcing required status checks and proving enforcement with the deliberately failing demo PR #13. For deployment, I managed the `model-v1.0` release from `dev` to `staging` in #15 and handled Git tag verification. Across the project lifecycle, I actively conducted code reviews, approving #1 and #7, requesting necessary changes on #4 for missing statistical medians, and reviewing the team report (#14) as well as the production and documentation releases (#16, #21).
 
 ## 8. Notes and limitations
 - The only data file in Git is `tests/data/telco_sample.csv`, a 300-row fixture so CI can run data
