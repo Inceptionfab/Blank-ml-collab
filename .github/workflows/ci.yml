@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, staging, main]
+
+permissions:
+  contents: read
+  pull-requests: write # needed only by the metrics-comment job
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install uv && uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install uv && uv sync --frozen
+      - run: uv run pytest tests/ -v
+
+  data-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install uv && uv sync --frozen
+      - run: uv run python -m src.data_checks tests/data/telco_sample.csv
+
+  smoke-train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install uv && uv sync --frozen
+      - run: uv run python -m src.smoke_train --data tests/data/telco_sample.csv
+
+  # BONUS (+5): post "metrics before -> after" as a PR comment with CML
+  metrics-comment:
+    runs-on: ubuntu-latest
+    needs: smoke-train
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # dvc metrics diff needs the base branch history
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install uv && uv sync --frozen
+      - uses: iterative/setup-cml@v2
+      - name: Build and post report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## Metrics: \`${{ github.base_ref }}\` → this PR" > report.md
+          uv run dvc metrics diff origin/${{ github.base_ref }} --md >> report.md
+          echo "## Params changed" >> report.md
+          uv run dvc params diff origin/${{ github.base_ref }} --md >> report.md
+          echo "## Smoke train (300-row sample)" >> report.md
+          uv run python -m src.smoke_train --data tests/data/telco_sample.csv >> report.md
+          cml comment create report.md
