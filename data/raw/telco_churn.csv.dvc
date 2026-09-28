@@ -1,5 +1,0 @@
-outs:
-- md5: 26b9f047a955a4b9660c9673ff385145
-  size: 968734
-  hash: md5
-  path: telco_churn.csv
